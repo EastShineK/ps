@@ -69,7 +69,7 @@ int main(int argc, char **argv){
 			if(buf[0] == '\n')
                         	break;
         	}
-     
+     		//test
 	}
 
 	close(infd);
