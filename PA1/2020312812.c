@@ -319,7 +319,7 @@ int main(int argc, char **argv){
                                                                 if(lineCopy > 0)
                                                                         sizeL++;
                                                                 else
-                                                                        break;
+	                                                                        break;
                                                         }
 							write(1,Line, sizeL);
 							write(1," ", 1);
@@ -329,11 +329,111 @@ int main(int argc, char **argv){
 						ansCount = 0;		
 						//printf("%d come in 84645\n", lineNumber);
 					}//imple 2 endl
-					else if(imple == 3){ // word*word
-						
+					else if(imple == 3){ // double quotation and word
+							
 					}
-					else if(imple == 4){ // double quotation and word
+					else if(imple == 4){ // word*word
+						int x = 0;                                              
+                                                int ansCount = 0;
+                                                int t;
+                                                int wLength;
+                                                char word[50];
+                                                int countIdx = 0, fourthImpCount = 0;
+                                                //printf("%d come in\n", lineNumber);
+                                                //if(lineNumber = 6)
+                                                        //printf("%d\n", NumW);
+                                                for(int i = 0; i < NumW; i++){
+                                                        int existingAnsCount = ansCount;
+                                                        for(int q = 0; q < 100; q++){
+                                                                if(buf2[i][q] == 0){
+                                                                        wLength = q;
+                                                                        break;
+                                                                }
+                                                        }
+                                                        for(int a = 0; a < 49; a++){
+                                                                word[a] = 0;
+                                                        }
+                                                        //if(lineNumber = 88)
+                                                        //      printf("%d\n", wLength);
+                                                        while(1){
 
+                                                        if(saveLine[x] != '\0' && saveLine[x] != 32){
+                                                                word[countIdx++] = saveLine[x];
+                                                                x++;
+                                                        }
+							else{
+                                                                word[countIdx++] = saveLine[x];
+                                                                x++;
+								if(fourthImpCount > 0){
+									fourthImpCount++;
+								}
+                                                                int k = 0;
+                                                                //if(lineNumber == 88)
+                                                                        //printf("%s %s\n", buf2[i], word);
+                                                                while(disting(buf2[i][k], word[k])){
+                                                                        k = k + 1;
+                                                                        //if(lineNumber == 88 && wLength == k)
+                                                                                //printf("%c\n", word[k]);
+                                                                        if(wLength == k && (word[k] == ' ' || word[k] == '\0')){
+                                                                                //if(lineNumber == 6)
+                                                                                        //printf("%d\n", ansCount);
+                                                                                ansCount++;
+										fourthImpCount++;
+										if(fourthImpCount == 3){
+											fourthImpCount--;
+										}
+                                                                                for(int a = 0; a < 49; a++){
+                                                                                        word[a] = 0;
+                                                                                }
+
+                                                                                //printf("hi\n");
+                                                                                break;
+                                                                        }
+                                                                }
+
+                                                                if(ansCount == existingAnsCount + 1){
+                                                                        //if(lineNumber == 6)
+                                                                                //printf("hihi22\n");
+                                                                        break;
+                                                                }
+                                                                else{
+                                                                        countIdx = 0;
+                                                                        for(int a = 0; a < 49; a++){
+                                                                                word[a] = 0;
+                                                                        }
+                                                                }
+                                                                if(saveLine[x-1] == '\0'){
+                                                                        //if(lineNumber == 6)
+                                                                                //printf("hihi22\n");
+                                                                        break;
+                                                                }
+                                                        }// else end 
+                                                        } //while 1 end
+							countIdx = 0;
+                                                } //for NumW end
+
+                                                //if(lineNumber == 88)
+                                                        //printf("k :%d %d\n", NumW, ansCount);
+                                                //printf("%d come in 474\n", lineNumber);       
+                                                if(NumW == ansCount && fourthImpCount != 2){
+                                                        char Line[5];
+                                                        ITOA(Line, lineNumber);
+                                                        int lineCopy = lineNumber;
+                                                        int sizeL = 1;
+                                                        while(1){
+                                                                lineCopy = lineCopy / 10;
+                                                                if(lineCopy > 0)
+                                                                        sizeL++;
+                                                                else
+                                                                                break;
+                                                        }
+                                                        write(1,Line, sizeL);
+                                                        write(1," ", 1);
+                                                        //break;
+                                                }//단어의 갯수와 실제 있는 단어의 갯수 비교
+                                                //count = 0;
+                                                ansCount = 0;
+					
 					}
 					//printf("korea\n");
 					
