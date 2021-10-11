@@ -103,6 +103,8 @@ int main(int argc, char **argv){
 
 		while(read(0, &ch, 1)){ //implementation 입력 받기
 			if(ch == '\n'){
+				if(imple == 3)
+					Idx--;
 				buf2[wordNumber][Idx++] = '\0';
 				if(wordNumber > 0)
 					NumW = wordNumber + 1;
@@ -249,6 +251,7 @@ int main(int argc, char **argv){
 									break;
 								}
 							}
+
 							for(int a = 0; a < 49; a++){
 								word[a] = 0;
 							}
@@ -330,7 +333,165 @@ int main(int argc, char **argv){
 						//printf("%d come in 84645\n", lineNumber);
 					}//imple 2 endl
 					else if(imple == 3){ // double quotation and word
+						int x = 0;
+                                                int ansCount = 0;
+                                                int t;
+                                                int wLength;
+                                                char word[50];
+                                                int countIdx = 0, thirdImpCount = 0, thirdImpCheck = 0, IdxCheck = 0;
+						
+                                                //printf("%d come in\n", lineNumber);
+                                                //if(lineNumber = 6)
+                                                        //printf("%d\n", NumW);
+                                                for(int i = 0; i < NumW; i++){
+							ansCount = i;
+                                                        int existingAnsCount = ansCount;
+							int existingThirdImpCount = thirdImpCount;
+                                                        for(int q = 0; q < 100; q++){
+                                                                if(buf2[i][q] == 0){
+                                                                        wLength = q;
+                                                                        break;
+                                                                }
+                                                        }
+
+							if(i == 0)
+                                                                        wLength--;
 							
+                                                        for(int a = 0; a < 49; a++){
+                                                                word[a] = 0;
+                                                        }
+                                                        //if(lineNumber = 1955 && i == 1)
+                                                              //printf("%d %d\n", i, wLength);
+                                                        while(1){
+							
+							
+							//wordIndex = x;
+                                                        if(saveLine[x] != '\0' && saveLine[x] != 32){
+                                                                word[countIdx++] = saveLine[x];
+                                                                x++;
+                                                        }
+                                                        else{
+                                                                word[countIdx++] = saveLine[x];
+                                                                x++;
+                                                               /* if(fourthImpCount > 0){
+                                                                        fourthImpCount++;
+                                                                }*/
+                                                                int k = 0;
+                                                                //if(lineNumber == 2315)
+                                                                       // printf("%s %s\n", buf2[i], word);
+								int t = 0;
+                                                                if(i == 0)
+                                                                        t = 1;
+
+								//printf("%s %s\n", buf2[0], buf2[1]);
+
+
+                                                                while(disting(buf2[i][t], word[k])){
+                                                                        k = k + 1;
+									t = t + 1;
+                                                                        //if(lineNumber == 1955)
+                                                                                //printf("%d\n", wLength);
+                                                                        if(wLength == k && (word[k] == ' ' || word[k] == '\0')){
+										ansCount++;
+                                                                                thirdImpCount++;
+										//if(lineNumber == 2315)
+										//	printf("%d %d\n", thirdImpCount, existingThirdImpCount);
+                                                                               
+										wordIndex = x;
+										for(int a = 0; a < 49; a++){
+                                                                                        word[a] = 0;
+                                                                                }
+
+                                                                                //printf("hi\n");
+                                                                                break;
+                                                                        }
+                                                                }
+								//if(lineNumber == 2315)
+								//	printf("%d %d\n", thirdImpCount, existingThirdImpCount);
+								if(thirdImpCount == existingThirdImpCount + 1){
+									thirdImpCheck = 1;
+									/*if(IdxCheck == 0){
+                                                                                wordIndex = x - k - 1;
+                                                                                IdxCheck = 1;
+                                                                        }*/
+								}
+								else{
+									thirdImpCheck = 2;
+									thirdImpCount = 0;
+									existingThirdImpCount = 0;
+									//ansCount = ansCount - 1;
+									i = 0;
+									//break;
+								}
+							//	if(lineNumber == 2315)		
+							//		printf("ansCount : %d %d\n", ansCount, existingAnsCount);
+                                                                if(ansCount == existingAnsCount + 1){
+                                                                        //if(lineNumber == 6)
+                                                                                //printf("hihi22\n");
+                                                                        break;
+                                                                }
+                                                                else{
+                                                                        countIdx = 0;
+                                                                        for(int a = 0; a < 49; a++){
+                                                                                word[a] = 0;
+                                                                        }
+                                                                }
+                                                                if(saveLine[x-1] == '\0'){
+                                                                        //if(lineNumber == 6)
+                                                                                //printf("hihi22\n");
+                                                                        break;
+                                                                }
+                                                        }// else end 
+                                                        } //while i1 end
+                                                        countIdx = 0;
+							if(thirdImpCheck == 2)
+								break;
+                                                } //for NumW end
+					//	if(lineNumber == 1955)
+					//		printf("%d %d\n", ansCount, thirdImpCheck);
+						if(NumW == ansCount && thirdImpCheck == 1){
+							int n = -1;
+							for(int m = 0; m < NumW; m++){
+								for(int z = 0; z < 100; z++){
+									if(buf2[m][z] != '\0'){
+										n++;
+									}
+									else
+										break;
+								}
+								n++;
+							}
+							wordIndex = wordIndex - n;
+                                                        char Line[5];
+                                                        ITOA(Line, lineNumber);
+                                                        char Index[3];
+                                                        ITOA(Index, wordIndex);
+                                                        int lineCopy = lineNumber;
+                                                        int wordCopy = wordIndex;
+                                                        int sizeL = 1, sizeI = 1;
+                                                        while(1){
+                                                                lineCopy = lineCopy / 10;
+                                                                if(lineCopy > 0)
+                                                                        sizeL++;
+                                                                else
+                                                                        break;
+                                                        }
+                                                        while(1){
+                                                                wordCopy = wordCopy / 10;
+                                                                if(wordCopy > 0)
+                                                                        sizeI++;
+                                                                else
+                                                                        break;
+                                                        }
+                                                        write(1,Line, sizeL);
+                                                        write(1, ":", 1);
+                                                        write(1, Index, sizeI);
+                                                        write(1, " ", 1);
+                                                        //break;
+                                                }//단어의 갯수와 실제 있는 단어의 갯수 비교
+                                                //count = 0;
+                                                ansCount = 0;
+
 					}
 					else if(imple == 4){ // word*word
 						int x = 0;                                              
