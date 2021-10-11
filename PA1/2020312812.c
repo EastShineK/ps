@@ -230,112 +230,86 @@ int main(int argc, char **argv){
 						} // for j end					
 					}
 					else if(imple == 2){ // word word
-						if(saveLine[0] == '\0'){
-							k = 0;
-                                        		wordIndex = 0;
-                                		        lineNumber++;
-                 	   	                    	break;
-						}
 		
-						//printf("%d come\n", lineNumber);
 						int x = 0;
 						int ans = 0;
 						int count = 0, ansCount = 0;
-						int startIdx = 0, endIdx;
-						int t, saveNull = 0;
-						//printf("%d\n", lineNumber);
+						int t;
+						int wLength;
+						char word[50];
+						int countIdx = 0;
 						//printf("%d come in\n", lineNumber);
-						while(1){
-							//printf("jale\n");
-							count++;
-							for(t = startIdx; buf2[t] != '\0'; t++){
-								if(buf2[t] == 32){
-									//printf("hi22\n");
+						//if(lineNumber = 6)
+							//printf("%d\n", NumW);
+						for(int i = 0; i < NumW; i++){
+							int existingAnsCount = ansCount;
+							for(int q = 0; q < 100; q++){
+								if(buf2[i][q] == 0){
+									wLength = q;
 									break;
 								}
-							}//단어 길이 찾기
-							endIdx = t;
-							//printf("%s\n", saveLine);
-							//printf("sI eI : %d %d\n", startIdx, endIdx);
-							for(int s = startIdx; s < endIdx; s++){
-								//while(saveLine[x] != '\0')
-									//if(lineNumber == 50 || lineNumber == 60)
-										//printf("ans : %d %d %d\n", lineNumber, startIdx, endIdx);
+							}
+							for(int a = 0; a < 49; a++){
+								word[a] = 0;
+							}
+							//if(lineNumber = 88)
+                                                        //	printf("%d\n", wLength);
+							while(1){
+
+							if(saveLine[x] != '\0' && saveLine[x] != 32){
+								word[countIdx++] = saveLine[x];
+								x++;
+							}
+							else{
+								word[countIdx++] = saveLine[x];
+								x++;
+								int k = 0;
+								//if(lineNumber == 88)
+									//printf("%s %s\n", buf2[i], word);
+								while(disting(buf2[i][k], word[k])){
+									k = k + 1;
+									//if(lineNumber == 88 && wLength == k)
+                                                                        	//printf("%c\n", word[k]);
+									if(wLength == k && (word[k] == ' ' || word[k] == '\0')){
+										//if(lineNumber == 6)
+											//printf("%d\n", ansCount);
+										ansCount++;
+										for(int a = 0; a < 49; a++){
+                        			                                        word[a] = 0;
+			                                                        }
+
+										//printf("hi\n");
+										break;
+									}
+								}
 								
-									if(disting(buf2[s], saveLine[x])){
-										x++;
-										//printf("helloworld\n");
-										if(s == endIdx - 1){
-
-											if(lineNumber == 50 || lineNumber == 60)
-                                                                                		printf("ans : %d %d %d %c %c\n", lineNumber, startIdx, endIdx, buf2[s], saveLine[x-1]);
-											if(saveLine[x] == 32 || saveLine[x] == '\0'){
-												//printf("ans : %d %d %d\n", lineNumber, startIdx, endIdx);
-												ans = 1;
-												x++;
-												break;
-											}
-											else{
-												ans = 0;
-												s = startIdx;
-												while(saveLine[x-1] != 32){
-                                                                                        		x++;
-                                                                                        		if(saveLine[x] == '\0'){
-                                                                                                		saveNull = 1;
-                                                                                                		break;
-                                                                                        		}
-                                                                                		}
-
-												break;
-											}
-										}
-
-									}
-									else{
-										//printf("%c\n", buf2[s]);
-										//printf("%c\n", saveLine[x]);
-										s = startIdx;
-										
-										do{
-											//printf("come here\n");
-											x++;
-											if(saveLine[x] == '\0'){
-												saveNull = 1;
-												break;
-											}
-										}while(saveLine[x-1] != 32);
-									}
-								//}//while saveLine != null
-								/*if(ans == 1)
-									break;*/
-								//printf("saveNull : %d\n", saveNull);
-								if(saveNull == 1){
-									saveNull = 0;
+								if(ansCount == existingAnsCount + 1){
+									//if(lineNumber == 6)
+                                                                                //printf("hihi22\n");
+									x = 0;
 									break;
 								}
-							}//saveLine 처음부터 훑어보면서 단어 찾기
-							if(ans == 1){
-								//printf("ansC: %d\n", lineNumber);
-								ansCount++;
-							}
-							startIdx = t + 1;
-							//printf("%d, %d\n", startIdx, endIdx);
-							/*if(saveNull==1){
-								saveNull = 0;
-								break;
-							}*/
-							//printf("hi\n");
-							if(buf2[startIdx] == '\0')
-								break;
-							if(buf2[endIdx] == '\0'){
-                                                        	//printf("hi\n");
-								break;
-							}
-						}//while(1) end
-						if(lineNumber == 60 || lineNumber == 50)
-							printf("%d %d\n", count, ansCount);
+								else{
+									countIdx = 0;
+									for(int a = 0; a < 49; a++){
+                		                                                word[a] = 0;
+		                                                        }
+								}
+								if(saveLine[x-1] == '\0'){
+									//if(lineNumber == 6)
+										//printf("hihi22\n");
+									break;
+								}
+							}// else end 
+							} //while 1 end
+							countIdx = 0;
+							x = 0;
+						} //for NumW end
+
+						//if(lineNumber == 88)
+							//printf("k :%d %d\n", NumW, ansCount);
 						//printf("%d come in 474\n", lineNumber);	
-						if(count == ansCount){
+						if(NumW == ansCount){
 							char Line[5];
                                                         ITOA(Line, lineNumber);
 							int lineCopy = lineNumber;
@@ -351,7 +325,7 @@ int main(int argc, char **argv){
 							write(1," ", 1);
 							//break;
 						}//단어의 갯수와 실제 있는 단어의 갯수 비교
-						count = 0;
+						//count = 0;
 						ansCount = 0;		
 						//printf("%d come in 84645\n", lineNumber);
 					}//imple 2 endl
