@@ -3,7 +3,7 @@
 #include<errno.h>
 #include<fcntl.h>
 #include<unistd.h>
-#include<stdio.h>  // 나중에 지워야함 오류확인용
+// #include<stdio.h>  // 나중에 지워야함 오류확인용
 
 void ITOA(char *c, int n){
 	int rad = 10;
@@ -150,6 +150,7 @@ int main(int argc, char **argv){
 
 
 		nbytes = 1;
+		int printCheck = 0;
 
 		while(nbytes != 0){		
 			//printf("kakakaka\n");
@@ -222,12 +223,15 @@ int main(int argc, char **argv){
                                                                         else
                                                                                 break;
                                                                 }
+								if(printCheck == 1)
+									write(1, " ", 1);
 								write(1,Line, sizeL);
 								write(1, ":", 1);
 								write(1, Index, sizeI);
-								write(1, " ", 1);
+								//write(1, " ", 1);
+								printCheck = 1;
 								ans = 0;
-								break;
+							//	break;
 							}
 						} // for j end					
 					}
@@ -244,6 +248,7 @@ int main(int argc, char **argv){
 						//if(lineNumber = 6)
 							//printf("%d\n", NumW);
 						for(int i = 0; i < NumW; i++){
+							//ansCount = i;
 							int existingAnsCount = ansCount;
 							for(int q = 0; q < 100; q++){
 								if(buf2[i][q] == 0){
@@ -324,8 +329,11 @@ int main(int argc, char **argv){
                                                                 else
 	                                                                        break;
                                                         }
+							if(printCheck == 1)
+                                                                        write(1, " ", 1);
 							write(1,Line, sizeL);
-							write(1," ", 1);
+							printCheck = 1;
+							//write(1," ", 1);
 							//break;
 						}//단어의 갯수와 실제 있는 단어의 갯수 비교
 						//count = 0;
@@ -377,8 +385,8 @@ int main(int argc, char **argv){
                                                                         fourthImpCount++;
                                                                 }*/
                                                                 int k = 0;
-                                                                //if(lineNumber == 2315)
-                                                                       // printf("%s %s\n", buf2[i], word);
+                                                                //if(lineNumber == 1750)
+                                                                       //printf("%s %s\n", buf2[i], word);
 								int t = 0;
                                                                 if(i == 0)
                                                                         t = 1;
@@ -387,14 +395,15 @@ int main(int argc, char **argv){
 
 
                                                                 while(disting(buf2[i][t], word[k])){
-                                                                        k = k + 1;
+                                                                        existingThirdImpCount = ansCount;
+									k = k + 1;
 									t = t + 1;
-                                                                        //if(lineNumber == 1955)
+                                                                        //if(lineNumber == 1750)
                                                                                 //printf("%d\n", wLength);
                                                                         if(wLength == k && (word[k] == ' ' || word[k] == '\0')){
 										ansCount++;
                                                                                 thirdImpCount++;
-										//if(lineNumber == 2315)
+										//if(lineNumber == 1750)
 										//	printf("%d %d\n", thirdImpCount, existingThirdImpCount);
                                                                                
 										wordIndex = x;
@@ -410,21 +419,27 @@ int main(int argc, char **argv){
 								//	printf("%d %d\n", thirdImpCount, existingThirdImpCount);
 								if(thirdImpCount == existingThirdImpCount + 1){
 									thirdImpCheck = 1;
-									/*if(IdxCheck == 0){
-                                                                                wordIndex = x - k - 1;
-                                                                                IdxCheck = 1;
-                                                                        }*/
 								}
 								else{
 									thirdImpCheck = 2;
 									thirdImpCount = 0;
-									existingThirdImpCount = 0;
-									//ansCount = ansCount - 1;
+									//existingThirdImpCount = 0;
 									i = 0;
+									ansCount = i;
+									existingAnsCount = ansCount;
+									for(int q = 0; q < 100; q++){
+                                                                		if(buf2[i][q] == 0){
+                                                                        		wLength = q;
+                                                                        		break;
+                                                                		}
+                                                        		}
+
+                                                        		if(i == 0)
+                                                                        	wLength--;
 									//break;
 								}
-							//	if(lineNumber == 2315)		
-							//		printf("ansCount : %d %d\n", ansCount, existingAnsCount);
+								//if(lineNumber == 1750)		
+									//printf("ansCount : %d %d\n", ansCount, existingAnsCount);
                                                                 if(ansCount == existingAnsCount + 1){
                                                                         //if(lineNumber == 6)
                                                                                 //printf("hihi22\n");
@@ -483,10 +498,12 @@ int main(int argc, char **argv){
                                                                 else
                                                                         break;
                                                         }
+							if(printCheck == 1)
+                                                                        write(1, " ", 1);
                                                         write(1,Line, sizeL);
                                                         write(1, ":", 1);
                                                         write(1, Index, sizeI);
-                                                        write(1, " ", 1);
+                                                        printCheck = 1;
                                                         //break;
                                                 }//단어의 갯수와 실제 있는 단어의 갯수 비교
                                                 //count = 0;
@@ -588,8 +605,11 @@ int main(int argc, char **argv){
                                                                 else
                                                                                 break;
                                                         }
+							if(printCheck == 1)
+                                                                        write(1, " ", 1);
                                                         write(1,Line, sizeL);
-                                                        write(1," ", 1);
+							printCheck = 1;
+                                                        //write(1," ", 1);
                                                         //break;
                                                 }//단어의 갯수와 실제 있는 단어의 갯수 비교
                                                 //count = 0;
