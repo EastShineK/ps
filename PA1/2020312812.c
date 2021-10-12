@@ -62,9 +62,8 @@ int checkWordStartEnd(char a, char b){
                 return 1;
         else if(a != '\0' && b == '\0')
                 return 1;
-
-	/*else
-		return 1;*/
+	else
+		return 1;
 }
 
 int main(int argc, char **argv){
@@ -75,7 +74,6 @@ int main(int argc, char **argv){
 	char ch;
 	int Idx = 0;
 	int len, nbytes = 1;
-	int number = 1;
 
 //단어 형식:한 단어 위치 찾기 라인넘버&인덱스 출력  clear
 //단어 단어 형식: 2개 이상의 단어가 포함되어 있는 라인넘버 출력 순서상관없음
@@ -88,17 +86,14 @@ int main(int argc, char **argv){
 		int lineNumber = 1;
 		int wordNumber = 0, wordIndex = 0;
 		int k = 0;
-		int imple = 1, check = 0, NumW;
+		int imple = 1, NumW;
 		for(int i = 0; i < 150; i++){
 			for(int j = 0; j < 100; j++){
 				buf2[i][j] = 0;
 			}
 		}
 
-		if((infd = open(argv[1], O_RDONLY)) < 0){
-                        perror("open");
-                        exit(1);
-        	}
+		infd = open(argv[1], O_RDONLY);
 
 
 		while(read(0, &ch, 1)){ //implementation 입력 받기
@@ -114,7 +109,6 @@ int main(int argc, char **argv){
 			}
 			else{
 				if(ch == 42){//* 
-					//printf("hi1\n");
 					buf2[wordNumber][Idx++] = '\0';
 					Idx = 0;
 					wordNumber++;
@@ -128,7 +122,6 @@ int main(int argc, char **argv){
 						imple = 2;
 					else
 						imple = 3;
-					//printf("hi3\n");
 				}
 				else{
 					buf2[wordNumber][Idx++] = ch;
@@ -153,21 +146,16 @@ int main(int argc, char **argv){
 		int printCheck = 0;
 
 		while(nbytes != 0){		
-			//printf("kakakaka\n");
 			for(int i = 0; ;i++){
-				//printf("jajaj\n");
 				nbytes = read(infd, buf, sizeof(buf));
 				saveLine[k] = buf[0];			
 				k++;
-				//printf("qiqiqiqiq\n");
 				if(buf[0] == '\n'){
-					//printf("vavavav\n");
 					saveLine[k-1] = '\0';
-					//printf("%d %d %d\n", lineNumber, imple, nbytes);
 					if(imple == 1){ // word
 						int ans = 0;
 						int j = 0;
-						for(j ; j < k; j++){
+						for(j=0 ; j < k; j++){
 							if(disting(buf2[0][0], saveLine[j])){
 								wordIndex = j;
 								
@@ -193,11 +181,8 @@ int main(int argc, char **argv){
 		
 									}
 									else{
-										//if(lineNumber = 106)
-										//	printf("sorry\n");
 										ans = 0;
-										break;
-										
+										break;	
 									}
 								}//for c end
 							}//if end
@@ -238,13 +223,10 @@ int main(int argc, char **argv){
 					else if(imple == 2){ // word word
 		
 						int x = 0;
-						int ans = 0;
-						int count = 0, ansCount = 0;
-						int t;
+						int ansCount = 0;
 						int wLength;
 						char word[50];
 						int countIdx = 0;
-						//printf("%d come in\n", lineNumber);
 						//if(lineNumber = 6)
 							//printf("%d\n", NumW);
 						for(int i = 0; i < NumW; i++){
@@ -343,10 +325,9 @@ int main(int argc, char **argv){
 					else if(imple == 3){ // double quotation and word
 						int x = 0;
                                                 int ansCount = 0;
-                                                int t;
                                                 int wLength;
                                                 char word[50];
-                                                int countIdx = 0, thirdImpCount = 0, thirdImpCheck = 0, IdxCheck = 0;
+                                                int countIdx = 0, thirdImpCount = 0, thirdImpCheck = 0;
 						
                                                 //printf("%d come in\n", lineNumber);
                                                 //if(lineNumber = 6)
@@ -513,7 +494,6 @@ int main(int argc, char **argv){
 					else if(imple == 4){ // word*word
 						int x = 0;                                              
                                                 int ansCount = 0;
-                                                int t;
                                                 int wLength;
                                                 char word[50];
                                                 int countIdx = 0, fourthImpCount = 0;
@@ -615,22 +595,16 @@ int main(int argc, char **argv){
                                                 //count = 0;
                                                 ansCount = 0;
 					
-					}
-					//printf("korea\n");
-					
+					}					
 					k = 0;
 					wordIndex = 0;
 					lineNumber++;
 					break;
 				}//if buf[n] == '\n'
-				//printf("h2222i\n");
 				
 			}//for end
-			//printf("cocococo\n");
 		} // while nbytes check end
-		//printf("lalalal\n");
 		//inp_size = 0;
-		//printf("\n");
 		write(1, "\n", 1);
 	}//while 1 end
 	
