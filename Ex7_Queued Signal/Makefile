@@ -1,0 +1,12 @@
+# Makefile
+TARGET=a.out
+CXX=gcc
+CXXFLAGS=-Wall
+OBJECTS=ex7_2020312812.o
+$(TARGET) : $(OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+ex7_2020312812.o: ex7_2020312812.c
+	$(CXX) $(CXXFLAGS) -c ex7_2020312812.c
+clean:
+	rm $(OBJECTS) $(TARGET)
+

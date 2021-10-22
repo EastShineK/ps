@@ -4,4 +4,5 @@
 ## week2 :
 ## week3 :
 ## week4 : Add Line Numbers
-## week5 :
+## week5 : Simple Mini Shell
+## week6 : Simple Cron Daemon
