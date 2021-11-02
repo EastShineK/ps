@@ -138,28 +138,191 @@ int main(){
 			if(strchr(cmd, '<') != NULL && strchr(cmd, '>') != NULL){ //command < file > file
 
 			}
-			else if(strchr(cmd, '<') != NULL){ // command < file
+			else if(strchr(cmd, '<') != NULL){ // command < file start : 4
+				make_tokens(cmd, arg, arg2, "<");
+                                sprintf(path, "/bin/%s", arg[0]);
+                                int in;
+				typeOfcmd = checkCmdType(arg[0]);
+				if(typeOfcmd == 1){
+                                        if(fork() == 0){
+                                                in = open(arg2[0], O_RDONLY, 0644);
+                                                //printf("%s\n", arg2[0]);
+                                                dup2(in, 0);
+						close(in);
+                                                //printf("%s %s\n", arg[0], arg[1]);
+                                                execv(path, arg);
+                                                exit(0);
+                                        }
+                                        else{
+                                                wait(&child_status);
+                                        }
+                                }
+				else if(typeOfcmd == 2){
+                                        if(fork() == 0){
+                                                in = open(arg2[0], O_RDONLY, 0644);
+                                                //printf("%s\n", arg2[0]);
+                                                dup2(in, 0);
+                                                close(in);
+                                                //printf("%s %s\n", arg[0], arg[1]);
+                                                execv(path, arg);
+                                                exit(0);
+                                        }
+                                        else{
+                                                wait(&child_status);
+                                        }
+                                }
+				else if(typeOfcmd == 3){ // < input을 파일을 통해 넣어 줄 경우의 코드 추가해야함 
+                                        int checkCmd3;
+                                        if(strcmp(arg[0], "cd") == 0){
+                                                checkCmd3 = 1;
+                                        }
+                                        if(fork() == 0){
+                                                in = open(arg2[0], O_RDONLY, 0644);
+                                                //printf("%s\n", arg2[0]);
+                                                dup2(in, 0);
+                                                close(in);
 
-                        }
-			else if(strchr(cmd, '>') != NULL){ // command > file
+                                                //printf("%s %s\n", arg[0], arg[1]);
+                                                if(checkCmd3 == 1){
+                                                        chdir(arg[1]);
+                                                        exit(0);
+                                                }
+                                                else{
+                                                        execv(path, arg);
+                                                        exit(0);
+                                                }
+                                        }
+                                        else{
+                                                wait(&child_status);
+                                                if(checkCmd3 == 1){
+                                                        chdir(arg[1]);
+                                                }
+                                        }
+                                }
+				else if(typeOfcmd == 4){ // < input을 파일을 통해 넣어 줄 경우의 코드 추가해야함 
+                                        int checkCmd4;
+                                        if(strcmp(arg[0], "exit") == 0){
+                                                checkCmd4 = 1;
+                                        }
+                                        if(fork() == 0){
+                                                in = open(arg2[0], O_RDONLY, 0644);
+                                                //printf("%s\n", arg2[0]);
+                                                dup2(in, 0);
+                                                close(in);
+
+                                                //printf("%s %s\n", arg[0], arg[1]);
+                                                if(checkCmd4 == 1){
+							int exitNum = atoi(arg[1]);
+                                                        exit(exitNum);
+                                                }
+                                                else{
+                                                        execv(path, arg);
+                                                        exit(0);
+                                                }
+                                        }
+                                        else{
+                                                wait(&child_status);
+                                                if(checkCmd4 == 1){
+							if(arg[1] == NULL)
+								exit(0);
+							else
+                                                        	exit(atoi(arg[1]));
+                                                }
+                                        }
+                                }
+
+                        } // command < file end : 3
+			else if(strchr(cmd, '>') != NULL){ // command > file start : 4
 				
 				make_tokens(cmd, arg, arg2, ">");
             			sprintf(path, "/bin/%s", arg[0]);
             			int out;
+				typeOfcmd = checkCmdType(arg[0]);
             			//printf("gheelo >\n");
-            			if(fork() == 0){
-                			out = open(arg2[0], O_RDWR|O_CREAT|O_TRUNC, 0644);
-                			//printf("%s\n", arg2[0]);
-                			dup2(out, 1);
-                		  	//printf("%s %s\n", arg[0], arg[1]);
-                			execv(path, arg);
-                			exit(0);
-           			}
-            			else{
-                			wait(&child_status);
-            			}
+
+				if(typeOfcmd == 1){
+					if(fork() == 0){
+                                        	out = open(arg2[0], O_RDWR|O_CREAT|O_TRUNC, 0644);
+                                        	//printf("%s\n", arg2[0]);
+                                        	dup2(out, 1);
+                                        	//printf("%s %s\n", arg[0], arg[1]);
+                                        	execv(path, arg);
+                                        	exit(0);
+                                	}
+                                	else{
+                                        	wait(&child_status);
+                                	}
+				}
+				else if(typeOfcmd == 2){
+                                        if(fork() == 0){
+                                                out = open(arg2[0], O_RDWR|O_CREAT|O_TRUNC, 0644);
+                                                //printf("%s\n", arg2[0]);
+                                                dup2(out, 1);
+                                                //printf("%s %s\n", arg[0], arg[1]);
+                                                execv(path, arg);
+                                                exit(0);
+                                        }
+                                        else{   
+                                                wait(&child_status);
+                                        }
+                                }
+				else if(typeOfcmd == 3){
+					int checkCmd3;
+					if(strcmp(arg[0], "cd") == 0){
+						checkCmd3 = 1;
+					}
+                                        if(fork() == 0){
+                                                out = open(arg2[0], O_RDWR|O_CREAT|O_TRUNC, 0644);
+                                                //printf("%s\n", arg2[0]);
+                                                dup2(out, 1);
+                                                //printf("%s %s\n", arg[0], arg[1]);
+						if(checkCmd3 == 1){
+							chdir(arg[1]);
+							exit(0);
+						}
+						else{
+                                                	execv(path, arg);
+                                                	exit(0);
+						}
+                                        }
+                                        else{
+                                                wait(&child_status);
+						if(checkCmd3 == 1){
+							chdir(arg[1]);
+						}
+                                        }
+                                }
+				else if(typeOfcmd == 4){
+                                        int checkCmd4;
+                                        if(strcmp(arg[0], "exit") == 0){
+                                                checkCmd4 = 1;
+                                        }
+                                        if(fork() == 0){
+                                                out = open(arg2[0], O_RDWR|O_CREAT|O_TRUNC, 0644);
+                                                //printf("%s\n", arg2[0]);
+                                                dup2(out, 1);
+                                                //printf("%s %s\n", arg[0], arg[1]);
+                                                if(checkCmd4 == 1){
+							int exitNum = atoi(arg[1]);
+                                                        exit(exitNum);
+                                                }
+                                                else{
+                                                        execv(path, arg);
+                                                        exit(0);
+                                                }
+                                        }
+                                        else{
+                                                wait(&child_status);
+                                                if(checkCmd4 == 1){
+                                                        if(arg[1] == NULL)
+								exit(0);
+							else
+								exit(atoi(arg[1]));
+                                                }
+                                        }
+                                }
             			//`close(out);
-                         }
+                         } // command > file end : 4
 			 else if(strchr(cmd, ">>") != NULL){ // command >> file
 
                          }
