@@ -1,3 +1,4 @@
+//2020312812 김동빈(Kim Dongbin)
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -9,9 +10,12 @@
 #include <signal.h>
 
 #define cmd_type1 1
+#define cmd_type1_1 5
 #define cmd_type2 2
 #define cmd_type3 3
 #define cmd_type4 4
+
+pid_t pid;
 
 void make_tokens(char* cmd, char* arg[], char* arg2[], char* target) {
 
@@ -90,6 +94,8 @@ int checkCmdType(char *arg){
 	else if(strcmp(&arg[0],"ls") == 0 || strcmp(&arg[0],"man") == 0 || strcmp(&arg[0],"grep") == 0 || strcmp(&arg[0],"sort") == 0 || strcmp(&arg[0],"awk") == 0 || strcmp(&arg[0],"bc") == 0){
                   return cmd_type1;
         }
+	else if(arg[0] == '.')
+		return cmd_type1_1;
 	else
 		return 0;
 
@@ -109,12 +115,12 @@ int main(){
 	char *arg4[128];
 	char *arg5[128];
 	char path[128];
-	char path2[128];
+	//char path2[128];
 	char path3[128][128];
 	int child_status;
 	int fd[100][2] = {0,};
-	int fdr;
-	char *sArr[50] = {NULL,};
+	//int fdr;
+	//char *sArr[50] = {NULL,};
 	//cmd type1: ls, man, grep, sort, awk, bc
 	//cmd type2: head, tail, cat, cp
 	//cmd type3: mv, rm, cd
@@ -129,6 +135,8 @@ int main(){
 
 		if(strchr(cmd, '|') != NULL){ // if | check : 1
 			int numberOfpipe = 0;
+			//if(cmd[0] == '.')
+				//numberOfType = 1;
 			for(int i = 0; cmd[i] != '\0' ; i++){
 				//printf("%c\n", cmd[i]);
 				if(cmd[i] == 124/*strcmp(&cmd[i], "|") == 0*/)
@@ -171,6 +179,11 @@ int main(){
 				}
 			}
 			}
+			if(access(arg4[0], F_OK) == -1){
+                                                        fprintf(stderr, "swsh: No such file\n");
+                                                        continue;
+                        }
+
 			//for(int r = 0; arg3[0][r] != '\0'; r++)
 				//printf("%s\n", arg3[0][r]);
 			
@@ -178,7 +191,14 @@ int main(){
                     		exit(1);
             		}
 			int in;
-			//printf("%s\n", arg4[0]);
+			//printf("%s\n", arg4[0]);i
+			int q = checkCmdType(arg3[0][0]);
+			//printf("%d\n", q);
+			if(q == 0){
+				//printf("jo\n");
+				fprintf(stderr, "swsh: Command not found\n");
+				continue;
+			}
             		if(fork() == 0){
 				close(STDOUT_FILENO);
 				dup2(fd[0][1], STDOUT_FILENO);
@@ -194,7 +214,10 @@ int main(){
                                 }
                                 //printf("com 2\n");
 				//printf("com 5\n");
-                                execv(path3[0], arg3[0]);
+				if(checkCmdType(arg3[0][0]) == 5)
+					execl(arg3[0][0], arg3[0][0], NULL);
+				else
+                                	execv(path3[0], arg3[0]);
 				//printf("com 6\n");
                                 exit(0);
             		}
@@ -210,13 +233,21 @@ int main(){
                                 if(pipe(fd[v])==-1){
                                         exit(1);
                                 }
+				if(checkCmdType(arg3[v][0]) == 0){
+                                	//printf("jo222\n");
+					fprintf(stderr, "swsh: Command not found\n");
+                                	continue;
+                        	}	
 				if(fork() == 0){
 					//printf("hixxxxxx\n");
 					dup2(fd[v-1][0], STDIN_FILENO);
                                 	dup2(fd[v][1], STDOUT_FILENO);
                                 	close(fd[v-1][0]);
                                 	close(fd[v][1]);
-                                	execv(path3[v], arg3[v]);
+					if(checkCmdType(arg3[v][0]) == 5)
+						execl(arg3[v][0],arg3[v][0], NULL);
+					else
+                                		execv(path3[v], arg3[v]);
                                 	exit(0);
                         	}
                         	else{
@@ -229,9 +260,7 @@ int main(){
 			/*if(pipe(fd[numberOfpipe]) == -1){
 				exit(1);
 			}*/
-			//printf("okokok2");
-			//
-
+			//printf("okokok2
 			int check62 = 0, locate62 = 0;
                         for(int a = 0; arg3[numberOfpipe][a] != '\0'; a++){
                         if(strchr(arg3[numberOfpipe][a], '>') != NULL){
@@ -255,7 +284,11 @@ int main(){
 			//for(int r = 0; arg3[numberOfpipe][r] != '\0'; r++)
                                 //printf("k : %s\n", arg3[numberOfpipe][r]);
 
-                        
+                        if(checkCmdType(arg3[numberOfpipe][0]) == 0){
+				//printf("jo3333\n");
+                                fprintf(stderr, "swsh: Command not found\n");
+                                continue;
+                        }
 			int out;
 			//printf("%s\n", arg5[0]);
 			if(fork() == 0){
@@ -267,7 +300,10 @@ int main(){
 					out = open(arg5[0], O_RDWR|O_CREAT|O_TRUNC, 0644);
 					dup2(out, 1);
 				}
-                                execv(path3[numberOfpipe], arg3[numberOfpipe]);
+				if(checkCmdType(arg3[numberOfpipe][0]) == 5)
+					execl(arg3[numberOfpipe][0],arg3[numberOfpipe][0], NULL);
+				else
+                                	execv(path3[numberOfpipe], arg3[numberOfpipe]);
                                 exit(0);
                         }
                         else{
@@ -286,7 +322,11 @@ int main(){
 				sprintf(path, "/bin/%s", arg[0]);
 				int in, out;
 				typeOfcmd = checkCmdType(arg[0]);
-				printf("1: %s 2: %s 3: %s\n", arg[0], arg2[0], arg2[2]);
+				//printf("1: %s 2: %s 3: %s\n", arg[0], arg2[0], arg2[2]);
+				if(access(arg2[0], F_OK) == -1){
+                                                        fprintf(stderr, "swsh: No such file\n");
+                                                        continue;
+                                }
 				if(typeOfcmd == 1){
                                         if(fork() == 0){
                                                 in = open(arg2[0], O_RDONLY, 0644);
@@ -382,13 +422,20 @@ int main(){
                                                 }
                                         }
                                 }
-
+				else{
+					fprintf(stderr, "swsh: Command not found\n");
+				}
 			}
 			else if(strchr(cmd, '<') != NULL){ // command < file start : 4
 				make_tokens(cmd, arg, arg2, "<");
                                 sprintf(path, "/bin/%s", arg[0]);
                                 int in;
 				typeOfcmd = checkCmdType(arg[0]);
+				if(access(arg2[0], F_OK) == -1){
+                                                        fprintf(stderr, "swsh: No such file\n");
+							continue;
+                                }
+
 				if(typeOfcmd == 1){
                                         if(fork() == 0){
                                                 in = open(arg2[0], O_RDONLY, 0644);
@@ -475,6 +522,24 @@ int main(){
                                                         	exit(atoi(arg[1]));
                                                 }
                                         }
+                                }
+				else{
+					if(cmd[0] == '.'){
+                                        	if(fork()==0){
+                                                	in = open(arg2[0], O_RDONLY, 0644);
+                                                //printf("%s\n", arg2[0]);
+                                                	dup2(in, 0);
+                                                	close(in);
+                                                //printf("%s %s\n", arg[0], arg[1]);
+                                                	execl(cmd, cmd, NULL);
+                                                	exit(0);
+                                        	}
+                                        	else{
+                                                	wait(&child_status);
+                                        	}
+                                	}
+					else
+                                        	fprintf(stderr, "swsh: Command not found\n");
                                 }
 
                         } // command < file end : 3
@@ -573,7 +638,23 @@ int main(){
                                         }
                                 }
                                 //`close(out);
-
+				else{
+                                        if(cmd[0] == '.'){
+                                                if(fork() == 0){
+                                                        out = open(arg2[0], O_RDWR|O_CREAT|O_APPEND, 0664);
+                                                //printf("%s\n", arg2[0]);
+                                                        dup2(out, 1);
+                                                //printf("%s %s\n", arg[0], arg[1]);
+                                                        execl(cmd, cmd, NULL);
+                                                        exit(0);
+                                                }
+                                                else{
+                                                        wait(&child_status);
+                                                }
+                                        }
+                                        else
+                                                fprintf(stderr, "swsh: Command not found\n");
+                                }
 
                          }
 			else if(strchr(cmd, '>') != NULL){ // command > file start : 4
@@ -666,27 +747,49 @@ int main(){
                                         }
                                 }
             			//`close(out);
+				else{
+					if(cmd[0] == '.'){
+                                        	if(fork() == 0){
+                                                	out = open(arg2[0], O_RDWR|O_CREAT|O_TRUNC, 0644);
+                                                //printf("%s\n", arg2[0]);
+                                                	dup2(out, 1);
+                                                //printf("%s %s\n", arg[0], arg[1]);
+                                                	execl(cmd,cmd, NULL);
+                                                	exit(0);
+                                        	}
+                                        	else{
+                                                	wait(&child_status);
+                                        	}
+                                	}
+					else
+                                        	fprintf(stderr, "swsh: Command not found\n");
+                                }
                          } // command > file end : 4
 			 else{ // command start : 7
+				
 				ptr = strtok(cmd, " ");
 				while(ptr != NULL){
 					arg[num++] = ptr;
 					ptr = strtok(NULL, " ");
 				}
 				arg[num] = NULL;
-
+	
 				typeOfcmd = checkCmdType(arg[0]);
 				//printf("type Cmd : %d\n", typeOfcmd);
 
 				if(typeOfcmd == 1){
 					sprintf(path, "/bin/%s", arg[0]);
-
-                                	if(fork() == 0){
+					pid = fork();
+                                	if(pid == 0){
                                         	execv(path, arg);
                                         	exit(0);
                                 	}
-                                	else
-                                        	wait(&child_status);
+                                	else{
+                                        	//wait(&child_status);
+						if(waitpid(-1, &child_status, WNOHANG | WUNTRACED ))
+							kill(pid, SIGKILL);
+						
+					}
 				}
 				else if(typeOfcmd == 2){
 					sprintf(path, "/bin/%s", arg[0]);
@@ -717,7 +820,7 @@ int main(){
 					//printf("check cmd3 : %d\n", checkCmd3);
                                         if(fork() == 0){
 						if(checkCmd3 == 1){
-							char pa[1024];
+							//char pa[1024];
 							//printf("%s\n", getcwd(pa, 1024));
 							chdir(arg[1]);
 							//printf("%s\n", getcwd(pa, 1024));
@@ -767,22 +870,26 @@ int main(){
 					}
 
                                 }
-				else{ // cmd type == 0
-					sprintf(path, "/bin/%s", arg[0]);
-
-                                        if(fork() == 0){
-                                                execv(path, arg);
-                                                exit(0);
-                                        }
-                                        else
-                                                wait(&child_status);
-
-				}
+				else{
+					//printf("in\n");
+					if(cmd[0] == '.'){
+						if(fork() == 0){
+                                                	execl(cmd, cmd, NULL);
+                                                	exit(0);
+                                        	}
+                                        	else
+                                                	wait(&child_status);
+					}
+					else{
+                                        	fprintf(stderr, "swsh: Command not found\n");
+						//printf("\n");
+					}
+                                }
 
 			 } // command end : 7
 
 		} // not pipe, command only 1 end : 2
-
+		//printf("%d\n", typeOfcmd);
 				
 		
 		
