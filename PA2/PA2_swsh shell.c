@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <signal.h>
+#include <errno.h>
 
 #define cmd_type1 1
 #define cmd_type1_1 5
@@ -127,9 +128,13 @@ int main(){
 	//cmd type4: pwd, exit
 
 	while(1){ // while 1 start : 0
+
+		//signal(SIGTSTP, SIG_IGN);
 		int num = 0;
 		int typeOfcmd = 0;
 		cmd = NULL;
+		signal(SIGTSTP, SIG_IGN);
+		signal(SIGINT, SIG_IGN);
 		getline(&cmd, &size, stdin);
 		cmd[strlen(cmd)-1] = '\0';
 
@@ -386,7 +391,8 @@ int main(){
                                         else{
                                                 wait(&child_status);
                                                 if(checkCmd3 == 1){
-                                                        chdir(arg[1]);
+                                                        if(chdir(arg[1]))
+                                                                fprintf(stderr, "cd: %s\n", strerror(errno));
                                                 }
                                         }
                                 }
@@ -488,7 +494,8 @@ int main(){
                                         else{
                                                 wait(&child_status);
                                                 if(checkCmd3 == 1){
-                                                        chdir(arg[1]);
+                                                        if(chdir(arg[1]))
+                                                                fprintf(stderr, "cd: %s\n", strerror(errno));
                                                 }
                                         }
                                 }
@@ -551,7 +558,8 @@ int main(){
                                 //printf("gheelo >\n");
 
                                 if(typeOfcmd == 1){
-                                        if(fork() == 0){
+                                        pid = fork();
+					if(pid == 0){
                                                 out = open(arg2[0], O_RDWR|O_CREAT|O_APPEND, 0644);
                                                 //printf("%s\n", arg2[0]);
                                                 //lseek(out, 0, SEEK_END);
@@ -562,11 +570,14 @@ int main(){
                                                 exit(0);
                                         }
                                         else{
-                                                wait(&child_status);
+                                                //wait(&child_status);
+                                                waitpid(-1, &child_status, WNOHANG | WUNTRACED );
+                                                     
                                         }
-                                }
+				}
 				else if(typeOfcmd == 2){
-                                        if(fork() == 0){
+                                        pid = fork();
+					if(pid == 0){
                                                 out = open(arg2[0], O_RDWR|O_CREAT|O_APPEND, 0644);
                                                 //printf("%s\n", arg2[0]);
                                                 //lseek(out, 0, SEEK_END);
@@ -577,7 +588,9 @@ int main(){
                                                 exit(0);
                                         }
                                         else{
-                                                wait(&child_status);
+                                                //wait(&child_status);
+                                                waitpid(-1, &child_status, WNOHANG | WUNTRACED );
+                                                      
                                         }
                                 }
 				else if(typeOfcmd == 3){
@@ -585,7 +598,8 @@ int main(){
                                         if(strcmp(arg[0], "cd") == 0){
                                                 checkCmd3 = 1;
                                         }
-                                        if(fork() == 0){
+					pid = fork();
+                                        if(pid == 0){
                                                 out = open(arg2[0], O_RDWR|O_CREAT|O_APPEND, 0644);
                                                 //printf("%s\n", arg2[0]);
                                                 dup2(out, 1);
@@ -601,9 +615,14 @@ int main(){
                                                 }
                                         }
                                         else{
-                                                wait(&child_status);
+                                                //wait(&child_status);
+                                                waitpid(-1, &child_status, WNOHANG | WUNTRACED );
+                                                        
+                                        
+
                                                 if(checkCmd3 == 1){
-                                                        chdir(arg[1]);
+                                                        if(chdir(arg[1]))
+                                                                fprintf(stderr, "cd: %s\n", strerror(errno));
                                                 }
                                         }
                                 }
@@ -612,7 +631,8 @@ int main(){
                                         if(strcmp(arg[0], "exit") == 0){
                                                 checkCmd4 = 1;
                                         }
-                                        if(fork() == 0){
+					pid = fork();
+                                        if(pid == 0){
                                                 out = open(arg2[0], O_RDWR|O_CREAT|O_APPEND, 0644);
                                                 //printf("%s\n", arg2[0]);
                                                 dup2(out, 1);
@@ -628,7 +648,10 @@ int main(){
                                                 }
                                         }
                                         else{
-                                                wait(&child_status);
+                                                //wait(&child_status);
+                                                waitpid(-1, &child_status, WNOHANG | WUNTRACED );
+                                                     
+
                                                 if(checkCmd4 == 1){
                                                         if(arg[1] == NULL)
                                                                 exit(0);
@@ -640,7 +663,8 @@ int main(){
                                 //`close(out);
 				else{
                                         if(cmd[0] == '.'){
-                                                if(fork() == 0){
+                                                pid = fork();
+						if(pid == 0){
                                                         out = open(arg2[0], O_RDWR|O_CREAT|O_APPEND, 0664);
                                                 //printf("%s\n", arg2[0]);
                                                         dup2(out, 1);
@@ -649,8 +673,11 @@ int main(){
                                                         exit(0);
                                                 }
                                                 else{
-                                                        wait(&child_status);
-                                                }
+                                                //wait(&child_status);
+                                                	waitpid(-1, &child_status, WNOHANG | WUNTRACED );
+                                                        	
+                                        	}
+
                                         }
                                         else
                                                 fprintf(stderr, "swsh: Command not found\n");
@@ -666,7 +693,8 @@ int main(){
             			//printf("gheelo >\n");
 
 				if(typeOfcmd == 1){
-					if(fork() == 0){
+					pid = fork();
+					if(pid == 0){
                                         	out = open(arg2[0], O_RDWR|O_CREAT|O_TRUNC, 0644);
                                         	//printf("%s\n", arg2[0]);
                                         	dup2(out, 1);
@@ -674,12 +702,16 @@ int main(){
                                         	execv(path, arg);
                                         	exit(0);
                                 	}
-                                	else{
-                                        	wait(&child_status);
-                                	}
+                             		else{
+                                                //wait(&child_status);
+                                                waitpid(-1, &child_status, WNOHANG | WUNTRACED );
+                                                     
+                                        }
+
 				}
 				else if(typeOfcmd == 2){
-                                        if(fork() == 0){
+                                        pid = fork();
+					if(pid == 0){
                                                 out = open(arg2[0], O_RDWR|O_CREAT|O_TRUNC, 0644);
                                                 //printf("%s\n", arg2[0]);
                                                 dup2(out, 1);
@@ -687,16 +719,20 @@ int main(){
                                                 execv(path, arg);
                                                 exit(0);
                                         }
-                                        else{   
-                                                wait(&child_status);
+                                        else{
+                                                //wait(&child_status);
+                                                waitpid(-1, &child_status, WNOHANG | WUNTRACED );
+                                                       
                                         }
-                                }
+
+				}
 				else if(typeOfcmd == 3){
 					int checkCmd3;
 					if(strcmp(arg[0], "cd") == 0){
 						checkCmd3 = 1;
 					}
-                                        if(fork() == 0){
+					pid = fork();
+                                        if(pid == 0){
                                                 out = open(arg2[0], O_RDWR|O_CREAT|O_TRUNC, 0644);
                                                 //printf("%s\n", arg2[0]);
                                                 dup2(out, 1);
@@ -711,9 +747,15 @@ int main(){
 						}
                                         }
                                         else{
-                                                wait(&child_status);
+                                                
+                                                //wait(&child_status);
+                                                waitpid(-1, &child_status, WNOHANG | WUNTRACED );
+                                                       
+                                        
+
 						if(checkCmd3 == 1){
-							chdir(arg[1]);
+							if(chdir(arg[1]))
+                                                                fprintf(stderr, "cd: %s\n", strerror(errno));
 						}
                                         }
                                 }
@@ -722,7 +764,8 @@ int main(){
                                         if(strcmp(arg[0], "exit") == 0){
                                                 checkCmd4 = 1;
                                         }
-                                        if(fork() == 0){
+					pid = fork();
+                                        if(pid == 0){
                                                 out = open(arg2[0], O_RDWR|O_CREAT|O_TRUNC, 0644);
                                                 //printf("%s\n", arg2[0]);
                                                 dup2(out, 1);
@@ -737,7 +780,10 @@ int main(){
                                                 }
                                         }
                                         else{
-                                                wait(&child_status);
+						
+                                                //wait(&child_status);
+                                                waitpid(-1, &child_status, WNOHANG | WUNTRACED );
+                                        	
                                                 if(checkCmd4 == 1){
                                                         if(arg[1] == NULL)
 								exit(0);
@@ -749,7 +795,8 @@ int main(){
             			//`close(out);
 				else{
 					if(cmd[0] == '.'){
-                                        	if(fork() == 0){
+						pid = fork();
+                                        	if(pid == 0){
                                                 	out = open(arg2[0], O_RDWR|O_CREAT|O_TRUNC, 0644);
                                                 //printf("%s\n", arg2[0]);
                                                 	dup2(out, 1);
@@ -758,8 +805,11 @@ int main(){
                                                 	exit(0);
                                         	}
                                         	else{
-                                                	wait(&child_status);
+                                                //wait(&child_status);
+                                                	waitpid(-1, &child_status, WNOHANG | WUNTRACED );
+                                                    
                                         	}
+
                                 	}
 					else
                                         	fprintf(stderr, "swsh: Command not found\n");
@@ -786,20 +836,34 @@ int main(){
                                 	}
                                 	else{
                                         	//wait(&child_status);
-						if(waitpid(-1, &child_status, WNOHANG | WUNTRACED ))
-							kill(pid, SIGKILL);
 						
+						waitpid(-1, &child_status, WNOHANG | WUNTRACED );
+                                                if(WIFSTOPPED(child_status))
+                                                        kill(pid, SIGKILL);
+
+						//printf("wefq\n");
 					}
 				}
 				else if(typeOfcmd == 2){
 					sprintf(path, "/bin/%s", arg[0]);
-
-                                	if(fork() == 0){
-                                        	execv(path, arg);
+					pid = fork();
+                                	if(pid == 0){
+						//printf("hi2\n");
+                                        	if(execv(path, arg))
+							fprintf(stderr, "%s\n", strerror(errno));
                                         	exit(0);
                                 	}
-                                	else
-                                        	wait(&child_status);
+                                	else{
+                                                //wait(&child_status);
+                                                waitpid(-1, &child_status, WNOHANG | WUNTRACED );
+						//printf("%d %d %d %d\n", WIFSIGNALED(child_status), WIFSTOPPED(child_status), WTERMSIG(child_status), WSTOPSIG(child_status));
+
+                                                if(WIFSTOPPED(child_status))        
+							kill(pid, SIGKILL);
+						//printf("nono\n");
+                                        }
+
+                                        	
                                 }
 				else if(typeOfcmd == 3){
 					int checkCmd3;
@@ -809,7 +873,7 @@ int main(){
         				}
 					else if(strcmp(arg[0],"rm") == 0){
                                                 //printf("in rm\n");
-						checkCmd3 = 0;//unlink();
+						checkCmd3 = 2;//unlink();
                                         }
 					else if(strcmp(arg[0],"cd") == 0){
                                                 //printf("in cd\n");
@@ -818,7 +882,8 @@ int main(){
 					sprintf(path, "/bin/%s", arg[0]);
 					//printf("%s %s\n", arg[0], arg[1]);
 					//printf("check cmd3 : %d\n", checkCmd3);
-                                        if(fork() == 0){
+                                        pid = fork();
+					if(pid == 0){
 						if(checkCmd3 == 1){
 							//char pa[1024];
 							//printf("%s\n", getcwd(pa, 1024));
@@ -832,9 +897,13 @@ int main(){
 						}
                                         }
                                         else{
-                                                wait(&child_status);
+                                                //wait(&child_status);
+                                                waitpid(-1, &child_status, WNOHANG | WUNTRACED );
+                                                        
+                            
 						if(checkCmd3 == 1){
-							chdir(arg[1]);
+							if(chdir(arg[1]))
+								fprintf(stderr, "cd: %s\n", strerror(errno));
 						}
 					}
 
@@ -846,8 +915,8 @@ int main(){
                                                 checkCmd4 = 1;//rename();
                                         }
 
-					
-                                        if(fork() == 0){
+					pid =fork();
+                                        if(pid == 0){
                                                 if(checkCmd4 == 1){
 							int exitNum = atoi(arg[1]);
 							//printf("%d\n", exitNum);
@@ -860,7 +929,12 @@ int main(){
                                                 }
                                         }
                                         else{
-                                                wait(&child_status);
+                                                
+                                                //wait(&child_status);
+                                                waitpid(-1, &child_status, WNOHANG | WUNTRACED );
+                                                        
+                                        
+
 						if(checkCmd4 == 1){
 							if(arg[1] == NULL)
 								exit(0);
@@ -873,12 +947,18 @@ int main(){
 				else{
 					//printf("in\n");
 					if(cmd[0] == '.'){
-						if(fork() == 0){
+						pid = fork();
+						if(pid == 0){
                                                 	execl(cmd, cmd, NULL);
                                                 	exit(0);
                                         	}
-                                        	else
-                                                	wait(&child_status);
+                                        	else{
+                                                //wait(&child_status);
+                                                	waitpid(-1, &child_status, WNOHANG | WUNTRACED );
+                                                       
+                                        	}
+
+                                                	
 					}
 					else{
                                         	fprintf(stderr, "swsh: Command not found\n");
