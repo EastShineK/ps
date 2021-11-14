@@ -7,6 +7,6 @@
 ## week5 : Simple Mini Shell
 ## week6 : Simple Cron Daemon
 ## week7 : Queued Signal
-## PA1 : 
+## PA1 : Detect Word Program
 ## week8 : Minishell with Redirection&Pipe
 ## week9 : Chatting Program
