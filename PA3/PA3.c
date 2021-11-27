@@ -73,6 +73,30 @@ int main(int argc, char *argv[]){
 		seat[i] = -1;
 	}
 
+	for(int i = 0; i < 1024; i++){
+                userSeatNum[i] = -1;
+        }
+
+	if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        printf("socket() failed.\n");
+        exit(1);
+    	}
+
+    	memset((char *)&saddr, 0, sizeof(saddr));
+    	saddr.sin_family = AF_INET;
+    	saddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    	saddr.sin_port = htons(port);
+
+    	if (bind(listenfd, (struct sockaddr *)&saddr, sizeof(saddr)) < 0) {
+        	printf("bind() failed.\n");
+        	exit(2);
+    	}
+
+    	if (listen(listenfd, 5) < 0) {
+        	printf("listen() failed.\n");
+        	exit(3);
+    	}
+
 
 
 
