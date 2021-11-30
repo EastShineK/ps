@@ -59,10 +59,42 @@ void *act(void *arg){
 			}
 		}
 		else if(information.action == 2){// reserve
-                        fdsf
+                        if(userState[information.user] != 3){ // not logged in
+				ans = -1;
+				send(n, &ans, sizeof(ans), 0);
+			}
+			else if(seat[information.user] != -1){ // already reserve seat
+				ans = -1;
+				send(n, &ans, sizeof(ans), 0);
+			}
+			else if(information.data > 255 || information.data < 0){
+				ans = -1;
+                                send(n, &ans, sizeof(ans), 0);
+			}
+			else if(userSeatNum[information.user] != -1){
+				ans = -1;
+                                send(n, &ans, sizeof(ans), 0);
+			}
+			else{
+				ans = information.data;
+				send(n, &ans, sizeof(ans), 0);
+				userSeatNum[information.user] = information.data;
+				seat[information.user] = information.user;
+			}
                 }
 		else if(information.action == 3){// check
-                        fdsf
+                        if(userState[information.user] != 3){ // not logged in
+                                ans = -1;
+                                send(n, &ans, sizeof(ans), 0);
+                        }
+			else if(userSeatNum[information.user] == -1){
+				ans = -1;
+				send(n, &ans, sizeof(ans), 0);
+			}
+			else{
+				ans = userSeatNum[information.user];
+				send(n, &ans, sizeof(ans), 0);
+			}
                 }
 		else if(information.action == 4){// cancel
                         fdsf
@@ -123,10 +155,40 @@ int main(int argc, char *argv[]){
     	FD_SET(listenfd, &readset);
     	fdmax = listenfd, fdnum;
 
+	while(1){
 
+		copyset = readset;
 
+		if ( (fdnum = select(fdmax + 1, &copyset, NULL, NULL, NULL)) < 0 ) {
+            		printf("select() failed.\n");
+            		exit(4);
+        	}
+        	//printf("hi000\n");
+        	//printf("fdmax : %d\n", fdmax);
+        	caddrlen=sizeof(caddr);
 
+		for(int i = 3; i < fdmax + 1; i++){
 
+			if (FD_ISSET(i, &copyset)){
+				if (i == listenfd) {
+
+                    			//caddrlen = sizeof(caddr);
+                    			if ((connfd = accept(listenfd, (struct sockaddr *)&caddr, (socklen_t *)&caddrlen)) < 0){
+                        			printf ("accept() failed.\n");
+                        			continue;
+                    			}
+
+					FD_SET(connfd, &readset);
+                    			if(fdmax < connfd) fdmax = connfd;
+				}// if i == listenfd end
+				else{
+					fdsaf
+				}// else end
+			} // if FD ISSET end
+		} // for end
+
+		memset(buf, 0, sizeof(buf));
+	} // while 1 end
 
 	return 0;
 }
