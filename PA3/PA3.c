@@ -87,7 +87,7 @@ void *act(void *arg){
                                 ans = -1;
                                 send(n, &ans, sizeof(ans), 0);
                         }
-			else if(userSeatNum[information.user] == -1){
+			else if(userSeatNum[information.user] == -1){ // not reserve any seat
 				ans = -1;
 				send(n, &ans, sizeof(ans), 0);
 			}
@@ -97,10 +97,30 @@ void *act(void *arg){
 			}
                 }
 		else if(information.action == 4){// cancel
-                        fdsf
+                        if(userState[information.user] != 3){ // not logged in
+                                ans = -1;
+                                send(n, &ans, sizeof(ans), 0);
+                        }
+			else if(userSeatNum[information.user] == -1){ // not reserve any seat
+                                ans = -1;
+                                send(n, &ans, sizeof(ans), 0);
+                        }
+			else{
+                                ans = userSeatNum[information.user];
+                                send(n, &ans, sizeof(ans), 0);
+				userSeatNum[information.user] = -1;
+                        }
                 }
 		else if(information.action == 5){// log out
-                        fdsf
+                        if(userState[information.user] != 3){ // not logged in
+                                ans = -1;
+                                send(n, &ans, sizeof(ans), 0);
+                        }
+			else{
+				ans = 1;
+				send(n, &ans, sizeof(ans), 0);
+				userState[information.user] = 2;
+			}
                 }
 	} // if recv end
 
