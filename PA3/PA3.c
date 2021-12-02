@@ -43,7 +43,7 @@ void *act(void *arg){
 				password[information.user] = information.data;
 			}
 			else if(userState[information.user] == 2){ // already regis.
-				if(){ //password ok
+				if(password[information.user] == information.data){ //password ok
 					ans = 1;
 					send(n, &ans, sizeof(ans), 0);
 					userState[information.user] = 3;
@@ -63,7 +63,7 @@ void *act(void *arg){
 				ans = -1;
 				send(n, &ans, sizeof(ans), 0);
 			}
-			else if(seat[information.user] != -1){ // already reserve seat
+			else if(seat[information.data] != -1){ // already reserve seat
 				ans = -1;
 				send(n, &ans, sizeof(ans), 0);
 			}
@@ -79,7 +79,7 @@ void *act(void *arg){
 				ans = information.data;
 				send(n, &ans, sizeof(ans), 0);
 				userSeatNum[information.user] = information.data;
-				seat[information.user] = information.user;
+				seat[information.data] = information.user;
 			}
                 }
 		else if(information.action == 3){// check
@@ -87,7 +87,7 @@ void *act(void *arg){
                                 ans = -1;
                                 send(n, &ans, sizeof(ans), 0);
                         }
-			else if(userSeatNum[information.user] == -1){ // not reserve any seat
+			else if(userSeatNum[information.data] != -1){ // not reserve any seat
 				ans = -1;
 				send(n, &ans, sizeof(ans), 0);
 			}
@@ -108,6 +108,7 @@ void *act(void *arg){
 			else{
                                 ans = userSeatNum[information.user];
                                 send(n, &ans, sizeof(ans), 0);
+				seat[userSeatNum[information.user]] = -1;
 				userSeatNum[information.user] = -1;
                         }
                 }
@@ -136,11 +137,12 @@ int main(int argc, char *argv[]){
 	char buf[100];
 	struct sockaddr_in saddr, caddr;
 	fd_set readset, copyset;
+	int fdmax, fdnum;
 
 	int port = atoi(argv[1]);
 
 	for(int i = 0; i < 1024; i++){
-                userState[i] = -1;
+                userState[i] = 1;
         }
 
 	for(int i = 0; i < 256; i++){
@@ -202,7 +204,11 @@ int main(int argc, char *argv[]){
                     			if(fdmax < connfd) fdmax = connfd;
 				}// if i == listenfd end
 				else{
-					fdsaf
+					int *t = &i;
+					pthread_t  ticketing;
+					pthread_create(&ticketing, NULL, &act, t);
+					//pthread_create(&ticketing, NULL, &act, (void*)i);
+					pthread_join(ticketing, NULL);
 				}// else end
 			} // if FD ISSET end
 		} // for end
