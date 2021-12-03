@@ -123,6 +123,11 @@ void *act(void *arg){
 				userState[information.user] = 2;
 			}
                 }
+		else if(information.action == 0){
+			if(information.user == 0 && information.data == 0){
+				send(n, seat, sizeof(seat), 0);
+			}
+		}
 	} // if recv end
 
 	
