@@ -1,0 +1,71 @@
+#include<iostream>
+#include<queue>
+
+using namespace std;
+
+#define INF (~0U >> 2);
+
+int map[100][100];
+int dst[100][100];
+int dx[]={0,0,-1,1};
+int dy[]={-1,1,0,0};
+
+int main(int argc, char** argv)
+{
+	int test_case;
+	int T;
+	queue<pair<int, int>> q;
+
+	cin>>T;
+
+	for(test_case = 1; test_case <= T; ++test_case)
+	{
+		int N;
+		
+		cin >> N;
+		
+		for(int i = 0; i < N; i++)
+		{
+		    for(int j = 0; j < N; j++)
+		    {
+		        scanf("%1d", &map[i][j]);
+
+		        dst[i][j] = INF;
+		        //cout << map[i][j] << " ";
+		    }
+		    //cout << endl;
+		}
+		
+		dst[0][0] = 0;
+		q.push(make_pair(0, 0));
+		
+		while(!q.empty())
+		{
+		    int cur_x = q.front().first;
+		    int cur_y = q.front().second;
+		    q.pop();
+		    
+		    for(int i = 0; i < 4; i++)
+		    {
+		        int adj_x = cur_x + dx[i];
+		        int adj_y = cur_y + dy[i];
+		        
+		        if(adj_x < 0 || adj_x >= N || adj_y < 0 || adj_y >= N){
+		            continue;
+		        }
+		        
+		        if(dst[adj_x][adj_y] > dst[cur_x][cur_y] + map[adj_x][adj_y])
+		        {
+		            dst[adj_x][adj_y] = dst[cur_x][cur_y] + map[adj_x][adj_y];
+		            q.push(make_pair(adj_x, adj_y));
+		        }
+		    }
+		}
+		
+		
+        
+        printf("#%d %d\n", test_case, dst[N-1][N-1]);
+
+	}
+	return 0;//정상종료시 반드시 0을 리턴해야합니다.
+}
